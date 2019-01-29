@@ -1,6 +1,7 @@
 export default {
   data() {
     return {
+      dimensionsKnown: false,
       width: 0,
       height: 0,
     };
@@ -26,6 +27,11 @@ export default {
     updateDimensions() {
       this.width = this.$el.clientWidth;
       this.height = this.$el.clientHeight;
+
+      if (!this.dimensionsKnown) {
+        this.dimensionsKnown = true;
+        this.$emit('dimensions-known');
+      }
     },
   },
 };

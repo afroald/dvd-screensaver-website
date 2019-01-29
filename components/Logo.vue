@@ -10,10 +10,15 @@
 
 <script>
 import dimensionsMixin from '~/mixins/dimensionsMixin';
+import entityMixin from '~/mixins/entityMixin';
 import positionableMixin from '~/mixins/positionableMixin';
 
 export default {
-  mixins: [dimensionsMixin, positionableMixin],
+  mixins: [
+    dimensionsMixin,
+    entityMixin,
+    positionableMixin,
+  ],
   props: {
     color: {
       type: String,
