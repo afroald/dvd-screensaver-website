@@ -67,4 +67,8 @@ module.exports = {
       }
     },
   },
+
+  serverMiddleware: [
+    '~/lib/loggerMiddleware',
+  ],
 };
