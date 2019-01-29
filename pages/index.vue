@@ -4,7 +4,6 @@
       :color="logoColor"
       :x="logoPosition[0]"
       :y="logoPosition[1]"
-      @click.native="toggleAnimation"
     />
   </div>
 </template>
@@ -72,6 +71,7 @@ export default {
       }
 
       this.setInitialLogoPosition();
+      this.startAnimating();
     },
 
     logoCollisions: {
@@ -100,6 +100,21 @@ export default {
   },
   created() {
     this.animationObserver = createAnimationObserver();
+  },
+  mounted() {
+    this.visibilityChangeHandler = () => {
+      if (document.hidden) {
+        console.log('Stopping animation because page became hidden');
+        this.stopAnimating();
+      } else {
+        console.log('Starting animation because page became visible');
+        this.startAnimating();
+      }
+    };
+    window.addEventListener('visibilitychange', this.visibilityChangeHandler);
+  },
+  beforeDestroy() {
+    window.removeEventListener('visibilitychange', this.visibilityChangeHandler);
   },
   methods: {
     setInitialLogoPosition() {
