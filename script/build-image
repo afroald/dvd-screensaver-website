@@ -1,0 +1,10 @@
+#!/bin/bash
+
+set -e
+
+cd "$(dirname "$0")/.."
+
+COMMIT=$(git rev-parse HEAD)
+
+docker build -t "registry.zielmaker.nl/zielmaker/dvd-screensaver-website:$COMMIT" .
+docker push "registry.zielmaker.nl/zielmaker/dvd-screensaver-website:$COMMIT"
