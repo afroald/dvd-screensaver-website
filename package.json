@@ -1,0 +1,39 @@
+{
+  "name": "dvd-screensaver-website",
+  "version": "1.0.0",
+  "description": "My finest Nuxt.js project",
+  "author": "Roald Hacquebord",
+  "private": true,
+  "scripts": {
+    "dev": "nuxt",
+    "build": "nuxt build",
+    "start": "nuxt start",
+    "generate": "nuxt generate",
+    "lint": "eslint --ext .js,.vue --ignore-path .gitignore .",
+    "precommit": "npm run lint",
+    "test": "jest"
+  },
+  "dependencies": {
+    "cross-env": "^5.2.0",
+    "nuxt": "^2.3.4"
+  },
+  "devDependencies": {
+    "nodemon": "^1.18.9",
+    "@nuxtjs/eslint-config": "^0.0.1",
+    "babel-eslint": "^8.2.1",
+    "eslint": "^5.0.1",
+    "eslint-config-standard": ">=12.0.0",
+    "eslint-plugin-import": ">=2.14.0",
+    "eslint-plugin-jest": ">=21.24.1",
+    "eslint-plugin-node": ">=7.0.1",
+    "eslint-plugin-promise": ">=4.0.1",
+    "eslint-plugin-standard": ">=4.0.0",
+    "eslint-loader": "^2.0.0",
+    "eslint-plugin-vue": "^5.0.0",
+    "@vue/test-utils": "^1.0.0-beta.27",
+    "babel-core": "7.0.0-bridge.0",
+    "babel-jest": "^23.6.0",
+    "jest": "^23.6.0",
+    "vue-jest": "^3.0.2"
+  }
+}
