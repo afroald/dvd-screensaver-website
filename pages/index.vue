@@ -93,6 +93,8 @@ export default {
           this.velocityVector,
         );
 
+        console.log('Updated vector after collisions', newVelocityVector);
+
         this.velocityVector.splice(0, 2, ...newVelocityVector);
         this.$store.commit('updateColor');
       },
