@@ -135,7 +135,27 @@ export default {
         interval * (x / 1000),
         interval * (y / 1000),
       ];
-      this.logoPosition = add(this.logoPosition, translation);
+
+      const newLogoPosition = add(this.logoPosition, translation);
+
+      // Yea probably smart to check bounds 🤖
+      if (newLogoPosition[0] < 0) {
+        newLogoPosition[0] = 0;
+      }
+
+      if (newLogoPosition[0] > this.width) {
+        newLogoPosition[0] = this.width;
+      }
+
+      if (newLogoPosition[1] < 0) {
+        newLogoPosition[1] = 0;
+      }
+
+      if (newLogoPosition[1] > this.height) {
+        newLogoPosition[1] = this.height;
+      }
+
+      this.logoPosition.splice(0, 2, ...newLogoPosition);
     },
   },
 };
