@@ -1,72 +1,60 @@
 <template>
-  <section class="container">
-    <div>
-      <logo />
-      <h1 class="title">
-        dvd-screensaver-website
-      </h1>
-      <h2 class="subtitle">
-        My finest Nuxt.js project
-      </h2>
-      <div class="links">
-        <a
-          href="https://nuxtjs.org/"
-          target="_blank"
-          class="button--green"
-        >
-          Documentation
-        </a>
-        <a
-          href="https://github.com/nuxt/nuxt.js"
-          target="_blank"
-          class="button--grey"
-        >
-          GitHub
-        </a>
-      </div>
-    </div>
-  </section>
+  <div :class="$style.canvas">
+    <logo
+      :color="logoColor"
+      :x="logoPosition[0]"
+      :y="logoPosition[1]"
+      @click.native="tick"
+    />
+  </div>
 </template>
 
 <script>
-import Logo from '~/components/Logo.vue'
+import Logo from '~/components/Logo';
+import dimensionsMixin from '~/mixins/dimensionsMixin';
+import { add } from '~/lib/vector-math';
+import createAnimationObserver from '~/lib/create-animation-observer';
+
+const VELOCITY = 100; // pixels per second
 
 export default {
-  components: {
-    Logo
-  }
-}
+  components: { Logo },
+  mixins: [dimensionsMixin],
+  data() {
+    return {
+      logoPosition: [0, 0],
+    };
+  },
+  computed: {
+    logoColor() {
+      return this.$store.state.color;
+    },
+  },
+  mounted() {
+    this.animationObserver = createAnimationObserver();
+    this.$nextTick(() => {
+      this.animationSubscription = this.animationObserver.subscribe((interval) => {
+        this.tick(interval);
+      });
+    });
+
+    setInterval(() => {
+      console.log('unsubscribing');
+      this.animationSubscription.unsubscribe();
+    }, 30 * 1000);
+  },
+  methods: {
+    tick(interval) {
+      const translation = interval * (VELOCITY / 1000);
+      this.logoPosition = add(this.logoPosition, [translation, translation]);
+    },
+  },
+};
 </script>
 
-<style>
-.container {
-  margin: 0 auto;
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-}
-
-.title {
-  font-family: 'Quicksand', 'Source Sans Pro', -apple-system, BlinkMacSystemFont,
-    'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  display: block;
-  font-weight: 300;
-  font-size: 100px;
-  color: #35495e;
-  letter-spacing: 1px;
-}
-
-.subtitle {
-  font-weight: 300;
-  font-size: 42px;
-  color: #526488;
-  word-spacing: 5px;
-  padding-bottom: 15px;
-}
-
-.links {
-  padding-top: 15px;
+<style module>
+.canvas {
+  width: 100vw;
+  height: 100vh;
 }
 </style>
