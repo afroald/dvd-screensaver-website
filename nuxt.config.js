@@ -15,6 +15,10 @@ module.exports = {
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
       { hid: 'description', name: 'description', content: pkg.description },
       { name: 'msapplication-TileColor', content: '#fdee50' },
+      { property: 'og:image', content: 'https://dvdscreensaver.online/og-image.png' },
+      { property: 'og:image:type', content: 'image/png' },
+      { property: 'og:image:width', content: '1080' },
+      { property: 'og:image:height', content: '741' },
     ],
     link: [
       { rel: 'apple-touch-icon', sizes: '180x180', href: '/apple-touch-icon.png' },
