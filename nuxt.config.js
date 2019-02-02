@@ -50,6 +50,7 @@ module.exports = {
   ** Nuxt.js modules
   */
   modules: [
+    ['nuxt-matomo', { matomoUrl: '//piwik.hacquebordbuckles.nl/', siteId: 14 }],
   ],
 
   /*

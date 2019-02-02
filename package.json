@@ -16,6 +16,7 @@
   "dependencies": {
     "cross-env": "^5.2.0",
     "nuxt": "^2.3.4",
+    "nuxt-matomo": "^1.2.1",
     "random-int": "^1.0.0",
     "rxjs": "^6.3.3",
     "vue": "^2.5.22"

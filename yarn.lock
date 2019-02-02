@@ -6354,6 +6354,11 @@ number-is-nan@^1.0.0:
   resolved "https://registry.yarnpkg.com/number-is-nan/-/number-is-nan-1.0.1.tgz#097b602b53422a522c1afb8790318336941a011d"
   integrity sha1-CXtgK1NCKlIsGvuHkDGDNpQaAR0=
 
+nuxt-matomo@^1.2.1:
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/nuxt-matomo/-/nuxt-matomo-1.2.1.tgz#fa64eab794369425e47a0ad3960eee973071dc07"
+  integrity sha512-BTkv8sHrnFzKOUgdvCLRKFcwCZvACapLYle8aKmopRVuQZTe4hh/yp7wmGSqFZFJprv9tPoxhLeelj39w1/oyQ==
+
 nuxt@^2.3.4:
   version "2.4.0"
   resolved "https://registry.yarnpkg.com/nuxt/-/nuxt-2.4.0.tgz#6e3c56f0b7425320227e437ecea2d0d392a9459e"
