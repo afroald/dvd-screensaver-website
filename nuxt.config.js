@@ -19,6 +19,7 @@ module.exports = {
       { property: 'og:image:type', content: 'image/png' },
       { property: 'og:image:width', content: '1080' },
       { property: 'og:image:height', content: '741' },
+      { name: 'google-site-verification', content: 'mlIKHJnEzOjgkVw3Ta3vNbjDTYB61WMlQH_qAY6BI4A' },
     ],
     link: [
       { rel: 'apple-touch-icon', sizes: '180x180', href: '/apple-touch-icon.png' },
