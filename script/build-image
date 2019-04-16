@@ -8,9 +8,9 @@ COMMIT=$(git rev-parse HEAD)
 BRANCH=$(git rev-parse --abbrev-ref HEAD)
 
 docker build \
-  -t "registry.zielmaker.nl/zielmaker/dvd-screensaver-website:$COMMIT" \
-  -t "registry.zielmaker.nl/zielmaker/dvd-screensaver-website:$BRANCH" \
+  -t "registry.zielmaker.nl/dvd-screensaver-website:$COMMIT" \
+  -t "registry.zielmaker.nl/dvd-screensaver-website:$BRANCH" \
   .
 
-docker push "registry.zielmaker.nl/zielmaker/dvd-screensaver-website:$COMMIT"
-docker push "registry.zielmaker.nl/zielmaker/dvd-screensaver-website:$BRANCH"
+docker push "registry.zielmaker.nl/dvd-screensaver-website:$COMMIT"
+docker push "registry.zielmaker.nl/dvd-screensaver-website:$BRANCH"
