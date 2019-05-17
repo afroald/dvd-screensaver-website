@@ -52,6 +52,7 @@ module.exports = {
   */
   modules: [
     ['nuxt-matomo', { matomoUrl: '//piwik.hacquebordbuckles.nl/', siteId: 14 }],
+    ['@nuxtjs/google-analytics', { id: 'UA-140404095-1' }],
   ],
 
   /*
