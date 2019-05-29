@@ -28,7 +28,7 @@ export default {
   data() {
     return {
       animating: false,
-      logoPosition: [10, 10],
+      logoPosition: [1, 1],
       velocityVector: [VELOCITY, VELOCITY],
     };
   },
@@ -69,8 +69,6 @@ export default {
       if (!ready) {
         return;
       }
-
-      this.setInitialLogoPosition();
       this.startAnimating();
     },
 
@@ -119,16 +117,6 @@ export default {
     window.removeEventListener('visibilitychange', this.visibilityChangeHandler);
   },
   methods: {
-    setInitialLogoPosition() {
-      const [logo] = this.entities;
-      this.logoPosition.splice(
-        0,
-        2,
-        this.width / 2 - logo.width / 2,
-        this.height / 2 - logo.height / 2,
-      );
-    },
-
     startAnimating() {
       this.animating = true;
       this.animationSubscription = this.animationObserver.subscribe((interval) => {
