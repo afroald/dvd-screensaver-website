@@ -8,17 +8,18 @@ const colors = [
   'rgb(0, 66, 245)',
 ];
 
-function getRandomColor() {
-  return colors[random(0, colors.length - 1)];
+function pickRandomElement(array) {
+  return array[random(0, array.length - 1)];
 }
 
 export const state = () => ({
-  color: getRandomColor(),
+  color: pickRandomElement(colors),
 });
 
 export const mutations = {
   // eslint-disable-next-line no-shadow
   updateColor(state) {
-    state.color = getRandomColor();
+    const availableColors = colors.filter(color => color !== state.color);
+    state.color = pickRandomElement(availableColors);
   },
 };
