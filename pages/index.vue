@@ -1,14 +1,18 @@
 <template>
-  <div :class="$style.canvas">
-    <logo
-      :color="logoColor"
-      :x="logoPosition[0]"
-      :y="logoPosition[1]"
-    />
+  <div>
+    <div :class="$style.canvas">
+      <logo
+        :color="logoColor"
+        :x="logoPosition[0]"
+        :y="logoPosition[1]"
+      />
+    </div>
+    <credits :class="$style.credits" />
   </div>
 </template>
 
 <script>
+import Credits from '~/components/Credits';
 import Logo from '~/components/Logo';
 import dimensionsMixin from '~/mixins/dimensionsMixin';
 import entityManagerMixin from '~/mixins/entityManagerMixin';
@@ -30,7 +34,7 @@ const transforms = {
 };
 
 export default {
-  components: { Logo },
+  components: { Credits, Logo },
   mixins: [dimensionsMixin, entityManagerMixin],
   data() {
     return {
@@ -171,5 +175,11 @@ export default {
   width: 100vw;
   height: 100vh;
   overflow: hidden;
+}
+
+.credits {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
 }
 </style>
