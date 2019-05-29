@@ -22,6 +22,13 @@ const COLLISION_TOP = Symbol('COLLISION_TOP');
 const COLLISION_LEFT = Symbol('COLLISION_LEFT');
 const COLLISION_BOTTOM = Symbol('COLLISION_BOTTOM');
 
+const transforms = {
+  [COLLISION_TOP]: [1, -1],
+  [COLLISION_BOTTOM]: [1, -1],
+  [COLLISION_LEFT]: [-1, 1],
+  [COLLISION_RIGHT]: [-1, 1],
+};
+
 export default {
   components: { Logo },
   mixins: [dimensionsMixin, entityManagerMixin],
@@ -78,13 +85,6 @@ export default {
         if (collisions.length === 0) {
           return;
         }
-
-        const transforms = {
-          [COLLISION_TOP]: [1, -1],
-          [COLLISION_BOTTOM]: [1, -1],
-          [COLLISION_LEFT]: [-1, 1],
-          [COLLISION_RIGHT]: [-1, 1],
-        };
 
         const newVelocityVector = collisions.reduce(
           (vector, collision) => multiply(vector, transforms[collision]),
