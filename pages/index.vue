@@ -80,7 +80,7 @@ export default {
   mixins: [dimensionsMixin, entityManagerMixin],
   data() {
     return {
-      debug: true,
+      debug: false,
       animating: false,
       logoPosition: [0, 0],
       velocityVector: [VELOCITY, VELOCITY],
@@ -129,7 +129,7 @@ export default {
         return;
       }
       this.calculateCollisions();
-      // this.startAnimating();
+      this.startAnimating();
     },
   },
   created() {
