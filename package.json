@@ -2,7 +2,8 @@
   "name": "dvd-screensaver-website",
   "version": "1.0.0",
   "description": "Will it hit the corner?",
-  "author": "Roald Hacquebord",
+  "author": "Roald Hacquebord <roald@zielma.kr> (https://roaldhacquebord.nl)",
+  "license": "GPL-3.0",
   "private": true,
   "scripts": {
     "dev": "nuxt",

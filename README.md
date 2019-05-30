@@ -20,3 +20,9 @@ $ yarn run generate
 ```
 
 For detailed explanation on how things work, checkout [Nuxt.js docs](https://nuxtjs.org).
+
+## Copyright (c)
+2019 Roald Hacquebord
+
+## Licence
+GNU GPL version 3, see `LICENSE` for more information
