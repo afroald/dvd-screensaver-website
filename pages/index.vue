@@ -164,6 +164,24 @@ export default {
     },
 
     tick(interval) {
+      // Bail out if we are not ready yet (might happen when hot-reloading this component)
+      if (!this.ready) {
+        return;
+      }
+
+      // Check if we are out of bounds and fix it
+      const [logoX, logoY] = this.logoPosition;
+      if (logoX < 0 || logoX > this.width - this.$refs.logo.width) {
+        this.logoPosition = [this.width - this.$refs.logo.width, logoY];
+        this.calculateCollisions();
+      }
+
+      if (logoY < 0 || logoY > this.height - this.$refs.logo.height) {
+        this.logoPosition = [logoX, this.height - this.$refs.logo.height];
+        this.calculateCollisions();
+      }
+
+      // Calculate the needed translation
       const [velocityX, velocityY] = this.velocityVector;
       const translation = [
         interval * (velocityX / 1000),
@@ -197,28 +215,35 @@ export default {
         // Calculate the intersection with each wall
         .map(wall => ([wall, intersect(wall, this.course)]))
         // Filter out walls that do not intersect
-        .filter(([, intersection]) => intersection !== false)
-        // Filter out intersections at the current position
-        .filter(([, intersection]) => {
-          const distance = difference(this.logoPosition, intersection)
-            .reduce((sum, diff) => sum + diff, 0);
+        .filter(([, intersection]) => intersection !== false);
 
-          return distance >= 1;
-        });
+      // Find collisions that are not at the current position
+      const collisionsNotAtCurrentPosition = collisions.filter(([, intersection]) => {
+        const distance = difference(this.logoPosition, intersection)
+          .reduce((sum, diff) => sum + diff, 0);
+
+        return distance >= 1;
+      });
+
+      // If all detected collisions are at the current position, then we just haven't
+      // handled the collision yet, so keep them as valid.
+      const validCollisions = collisionsNotAtCurrentPosition.length > 0
+        ? collisionsNotAtCurrentPosition
+        : collisions;
 
       // This shouldn't happen, but lets try not to crash
-      if (collisions.length === 0) {
+      if (validCollisions.length === 0) {
         this.collision = null;
         this.requiredTransformations = [];
         return;
       }
 
       // Make the intersection where we're gonna collide available in local state
-      const [, collision] = collisions[0];
+      const [, collision] = validCollisions[0];
       this.collision = collision;
 
       // Figure out which transformations to apply to the velocity vector when we collide
-      this.requiredTransformations = collisions.map(([wall]) => {
+      this.requiredTransformations = validCollisions.map(([wall]) => {
         const index = this.walls.indexOf(wall);
         return transformations[index];
       });
