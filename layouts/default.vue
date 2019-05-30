@@ -3,6 +3,11 @@
 </template>
 
 <style>
+html {
+  font-family: Helvetica, Arial, sans-serif;
+  color: #fff;
+}
+
 html,
 body {
   height: 100%;
