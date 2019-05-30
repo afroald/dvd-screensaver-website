@@ -1,74 +1,122 @@
 <template>
   <div>
-    <div :class="$style.canvas">
+    <super-canvas>
       <logo
+        ref="logo"
         :color="logoColor"
         :x="logoPosition[0]"
         :y="logoPosition[1]"
       />
-    </div>
+
+      <template v-if="debug">
+        <debug
+          :animating="animating"
+          @start="startAnimating"
+          @stop="stopAnimating"
+        />
+        <template v-if="walls.length">
+          <super-line
+            v-for="(wall, index) in walls"
+            :key="index"
+            :p1="wall[0]"
+            :p2="wall[1]"
+          />
+        </template>
+
+        <super-line
+          :p1="course[0]"
+          :p2="course[1]"
+        />
+
+        <location-marker
+          v-if="collision"
+          :x="collision[0]"
+          :y="collision[1]"
+        />
+      </template>
+    </super-canvas>
+
     <credits :class="$style.credits" />
   </div>
 </template>
 
 <script>
+import Debug from '~/components/Debug';
 import Credits from '~/components/Credits';
+import LocationMarker from '~/components/LocationMarker';
 import Logo from '~/components/Logo';
+import SuperCanvas from '~/components/SuperCanvas';
+import SuperLine from '~/components/SuperLine';
 import dimensionsMixin from '~/mixins/dimensionsMixin';
 import entityManagerMixin from '~/mixins/entityManagerMixin';
-import { add, multiply } from '~/lib/vector-math';
+import {
+  abs,
+  add,
+  difference,
+  multiply,
+  intersect,
+  smallerThan,
+} from '~/lib/vector-math';
 import createAnimationObserver from '~/lib/create-animation-observer';
 
 const VELOCITY = 100; // pixels per second
 
-const COLLISION_RIGHT = Symbol('COLLISION_RIGHT');
-const COLLISION_TOP = Symbol('COLLISION_TOP');
-const COLLISION_LEFT = Symbol('COLLISION_LEFT');
-const COLLISION_BOTTOM = Symbol('COLLISION_BOTTOM');
-
-const transforms = {
-  [COLLISION_TOP]: [1, -1],
-  [COLLISION_BOTTOM]: [1, -1],
-  [COLLISION_LEFT]: [-1, 1],
-  [COLLISION_RIGHT]: [-1, 1],
-};
+const transformations = [
+  [1, -1], // top
+  [-1, 1], // left
+  [1, -1], // bottom
+  [-1, 1], // right
+];
 
 export default {
-  components: { Credits, Logo },
+  components: {
+    Debug,
+    Credits,
+    LocationMarker,
+    Logo,
+    SuperCanvas,
+    SuperLine,
+  },
   mixins: [dimensionsMixin, entityManagerMixin],
   data() {
     return {
+      debug: true,
       animating: false,
-      logoPosition: [1, 1],
+      logoPosition: [0, 0],
       velocityVector: [VELOCITY, VELOCITY],
+      collision: null,
+      requiredTransformations: [],
     };
   },
   computed: {
+    course() {
+      return [
+        this.logoPosition,
+        add(this.logoPosition, multiply(this.velocityVector, [1000, 1000])),
+      ];
+    },
+
     ready() {
       return this.dimensionsKnown
              && this.entities.length > 0
              && this.entities.every(entity => entity.dimensionsKnown);
     },
 
-    logoCollisions() {
-      if (!this.animating || this.entities.length === 0) {
+    walls() {
+      if (!this.ready) {
         return [];
       }
 
-      const [logo] = this.entities;
-      const [x, y] = this.logoPosition;
-
-      const collisionTop = y <= 0;
-      const collisionLeft = x <= 0;
-      const collisionRight = x + logo.width >= this.width;
-      const collisionBottom = y + logo.height >= this.height;
+      const { logo } = this.$refs;
+      const width = this.width - logo.width;
+      const height = this.height - logo.height;
 
       return [
-        collisionTop ? COLLISION_TOP : null,
-        collisionLeft ? COLLISION_LEFT : null,
-        collisionRight ? COLLISION_RIGHT : null,
-        collisionBottom ? COLLISION_BOTTOM : null,
-      ].filter(Boolean);
+        [[0, 0], [width, 0]], // top
+        [[0, 0], [0, height]], // left
+        [[0, height], [width, height]], // bottom
+        [[width, 0], [width, height]], // right
+      ];
     },
 
     logoColor() {
@@ -80,45 +128,22 @@ export default {
       if (!ready) {
         return;
       }
-      this.startAnimating();
-    },
-
-    logoCollisions: {
-      immediate: true,
-      handler(collisions) {
-        if (collisions.length === 0) {
-          return;
-        }
-
-        const newVelocityVector = collisions.reduce(
-          (vector, collision) => multiply(vector, transforms[collision]),
-          this.velocityVector,
-        );
-
-        console.log('Updated vector after collisions', newVelocityVector);
-
-        this.velocityVector.splice(0, 2, ...newVelocityVector);
-        this.$store.commit('updateColor');
-      },
+      this.calculateCollisions();
+      // this.startAnimating();
     },
   },
   created() {
     this.animationObserver = createAnimationObserver();
   },
   mounted() {
-    this.visibilityChangeHandler = () => {
-      if (document.hidden) {
-        console.log('Stopping animation because page became hidden');
-        this.stopAnimating();
-      } else {
-        console.log('Starting animation because page became visible');
-        this.startAnimating();
-      }
+    this.resizeEventListener = () => {
+      this.calculateCollisions();
     };
-    window.addEventListener('visibilitychange', this.visibilityChangeHandler);
+
+    window.addEventListener('resize', this.resizeEventListener);
   },
   beforeDestroy() {
-    window.removeEventListener('visibilitychange', this.visibilityChangeHandler);
+    window.removeEventListener('resize', this.resizeEventListener);
   },
   methods: {
     startAnimating() {
@@ -129,8 +154,8 @@ export default {
     },
 
     stopAnimating() {
-      this.animating = false;
       this.animationSubscription.unsubscribe();
+      this.animating = false;
     },
 
     toggleAnimation() {
@@ -139,44 +164,70 @@ export default {
     },
 
     tick(interval) {
-      const [x, y] = this.velocityVector;
+      const [velocityX, velocityY] = this.velocityVector;
       const translation = [
-        interval * (x / 1000),
-        interval * (y / 1000),
+        interval * (velocityX / 1000),
+        interval * (velocityY / 1000),
       ];
 
-      const newLogoPosition = add(this.logoPosition, translation);
+      // Check if we will collide when applying the translation
+      const willCollide = this.collision
+        && smallerThan(difference(this.logoPosition, this.collision), abs(translation));
 
-      // Yea probably smart to check bounds 🤖
-      if (newLogoPosition[0] < 0) {
-        newLogoPosition[0] = 0;
+      if (willCollide) {
+        this.logoPosition.splice(0, 2, ...this.collision);
+        this.velocityVector = this.requiredTransformations.reduce(
+          (velocity, transformation) => multiply(velocity, transformation),
+          this.velocityVector,
+        );
+        this.$store.commit('updateColor');
+        this.calculateCollisions();
+      } else {
+        const newLogoPosition = add(this.logoPosition, translation);
+        this.logoPosition.splice(0, 2, ...newLogoPosition);
+      }
+    },
+
+    calculateCollisions() {
+      if (this.walls.length === 0) {
+        return;
       }
 
-      if (newLogoPosition[0] > this.width) {
-        newLogoPosition[0] = this.width;
+      const collisions = this.walls
+        // Calculate the intersection with each wall
+        .map(wall => ([wall, intersect(wall, this.course)]))
+        // Filter out walls that do not intersect
+        .filter(([, intersection]) => intersection !== false)
+        // Filter out intersections at the current position
+        .filter(([, intersection]) => {
+          const distance = difference(this.logoPosition, intersection)
+            .reduce((sum, diff) => sum + diff, 0);
+
+          return distance >= 1;
+        });
+
+      // This shouldn't happen, but lets try not to crash
+      if (collisions.length === 0) {
+        this.collision = null;
+        this.requiredTransformations = [];
+        return;
       }
 
-      if (newLogoPosition[1] < 0) {
-        newLogoPosition[1] = 0;
-      }
+      // Make the intersection where we're gonna collide available in local state
+      const [, collision] = collisions[0];
+      this.collision = collision;
 
-      if (newLogoPosition[1] > this.height) {
-        newLogoPosition[1] = this.height;
-      }
-
-      this.logoPosition.splice(0, 2, ...newLogoPosition);
+      // Figure out which transformations to apply to the velocity vector when we collide
+      this.requiredTransformations = collisions.map(([wall]) => {
+        const index = this.walls.indexOf(wall);
+        return transformations[index];
+      });
     },
   },
 };
 </script>
 
-<style module>
-.canvas {
-  width: 100vw;
-  height: 100vh;
-  overflow: hidden;
-}
-
+<style lang="scss" module>
 .credits {
   position: absolute;
   right: 10px;
