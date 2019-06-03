@@ -170,16 +170,7 @@ export default {
       }
 
       // Check if we are out of bounds and fix it
-      const [logoX, logoY] = this.logoPosition;
-      if (logoX < 0 || logoX > this.width - this.$refs.logo.width) {
-        this.logoPosition = [this.width - this.$refs.logo.width, logoY];
-        this.calculateCollisions();
-      }
-
-      if (logoY < 0 || logoY > this.height - this.$refs.logo.height) {
-        this.logoPosition = [logoX, this.height - this.$refs.logo.height];
-        this.calculateCollisions();
-      }
+      this.fixOutOfBounds();
 
       // Calculate the needed translation
       const [velocityX, velocityY] = this.velocityVector;
@@ -210,6 +201,8 @@ export default {
       if (this.walls.length === 0) {
         return;
       }
+
+      console.info('Calculating collisions');
 
       const collisions = this.walls
         // Calculate the intersection with each wall
@@ -247,6 +240,39 @@ export default {
         const index = this.walls.indexOf(wall);
         return transformations[index];
       });
+    },
+
+    fixOutOfBounds() {
+      let correctionApplied = false;
+      const [logoX, logoY] = this.logoPosition;
+
+      if (logoX < 0) {
+        console.info('Updating logo position, x < 0');
+        this.logoPosition = [0, logoY];
+        correctionApplied = true;
+      }
+
+      if (logoX > this.width - this.$refs.logo.width) {
+        console.info('Updating logo position, x > width');
+        this.logoPosition = [this.width - this.$refs.logo.width, logoY];
+        correctionApplied = true;
+      }
+
+      if (logoY < 0) {
+        console.info('Updating logo position, y < 0');
+        this.logoPosition = [logoX, 0];
+        correctionApplied = true;
+      }
+
+      if (logoY > this.height - this.$refs.logo.height) {
+        console.info('Updating logo position, y > height');
+        this.logoPosition = [logoX, this.height - this.$refs.logo.height];
+        correctionApplied = true;
+      }
+
+      if (correctionApplied) {
+        this.calculateCollisions();
+      }
     },
   },
 };
