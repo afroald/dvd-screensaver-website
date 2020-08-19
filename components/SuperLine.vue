@@ -1,8 +1,5 @@
 <template>
-  <div
-    :class="$style.line"
-    :style="{ width, transform }"
-  />
+  <div :class="$style.line" :style="{ width, transform }" />
 </template>
 
 <script>

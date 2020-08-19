@@ -4,23 +4,22 @@
       :class="$style.link"
       href="https://github.com/afroald/dvd-screensaver-website"
       target="_blank"
-    >source</a>
+      >source</a
+    >
     —
-    <a
-      :class="$style.link"
-      href="https://roaldhacquebord.nl"
-      target="_blank"
-    >roald hacquebord</a>
+    <a :class="$style.link" href="https://roaldhacquebord.nl" target="_blank"
+      >roald hacquebord</a
+    >
   </div>
 </template>
 
 <style lang="scss" module>
 .credits {
-  opacity: .15;
-  transition: opacity .06s ease-in-out;
+  opacity: 0.15;
+  transition: opacity 0.06s ease-in-out;
 
   &:hover {
-    opacity: .8;
+    opacity: 0.8;
   }
 }
 

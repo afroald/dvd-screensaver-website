@@ -19,7 +19,7 @@ export const state = () => ({
 export const mutations = {
   // eslint-disable-next-line no-shadow
   updateColor(state) {
-    const availableColors = colors.filter(color => color !== state.color);
+    const availableColors = colors.filter((color) => color !== state.color);
     state.color = pickRandomElement(availableColors);
   },
 };
