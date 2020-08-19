@@ -23,16 +23,9 @@
           />
         </template>
 
-        <super-line
-          :p1="course[0]"
-          :p2="course[1]"
-        />
+        <super-line :p1="course[0]" :p2="course[1]" />
 
-        <location-marker
-          v-if="collision"
-          :x="collision[0]"
-          :y="collision[1]"
-        />
+        <location-marker v-if="collision" :x="collision[0]" :y="collision[1]" />
       </template>
     </super-canvas>
 
@@ -97,9 +90,11 @@ export default {
     },
 
     ready() {
-      return this.dimensionsKnown
-             && this.entities.length > 0
-             && this.entities.every(entity => entity.dimensionsKnown);
+      return (
+        this.dimensionsKnown &&
+        this.entities.length > 0 &&
+        this.entities.every((entity) => entity.dimensionsKnown)
+      );
     },
 
     walls() {
@@ -112,10 +107,22 @@ export default {
       const height = this.height - logo.height;
 
       return [
-        [[0, 0], [width, 0]], // top
-        [[0, 0], [0, height]], // left
-        [[0, height], [width, height]], // bottom
-        [[width, 0], [width, height]], // right
+        [
+          [0, 0],
+          [width, 0],
+        ], // top
+        [
+          [0, 0],
+          [0, height],
+        ], // left
+        [
+          [0, height],
+          [width, height],
+        ], // bottom
+        [
+          [width, 0],
+          [width, height],
+        ], // right
       ];
     },
 
@@ -148,9 +155,11 @@ export default {
   methods: {
     startAnimating() {
       this.animating = true;
-      this.animationSubscription = this.animationObserver.subscribe((interval) => {
-        this.tick(interval);
-      });
+      this.animationSubscription = this.animationObserver.subscribe(
+        (interval) => {
+          this.tick(interval);
+        }
+      );
     },
 
     stopAnimating() {
@@ -180,14 +189,18 @@ export default {
       ];
 
       // Check if we will collide when applying the translation
-      const willCollide = this.collision
-        && smallerThan(difference(this.logoPosition, this.collision), abs(translation));
+      const willCollide =
+        this.collision &&
+        smallerThan(
+          difference(this.logoPosition, this.collision),
+          abs(translation)
+        );
 
       if (willCollide) {
         this.logoPosition.splice(0, 2, ...this.collision);
         this.velocityVector = this.requiredTransformations.reduce(
           (velocity, transformation) => multiply(velocity, transformation),
-          this.velocityVector,
+          this.velocityVector
         );
         this.$store.commit('updateColor');
         this.calculateCollisions();
@@ -206,23 +219,28 @@ export default {
 
       const collisions = this.walls
         // Calculate the intersection with each wall
-        .map(wall => ([wall, intersect(wall, this.course)]))
+        .map((wall) => [wall, intersect(wall, this.course)])
         // Filter out walls that do not intersect
         .filter(([, intersection]) => intersection !== false);
 
       // Find collisions that are not at the current position
-      const collisionsNotAtCurrentPosition = collisions.filter(([, intersection]) => {
-        const distance = difference(this.logoPosition, intersection)
-          .reduce((sum, diff) => sum + diff, 0);
+      const collisionsNotAtCurrentPosition = collisions.filter(
+        ([, intersection]) => {
+          const distance = difference(this.logoPosition, intersection).reduce(
+            (sum, diff) => sum + diff,
+            0
+          );
 
-        return distance >= 1;
-      });
+          return distance >= 1;
+        }
+      );
 
       // If all detected collisions are at the current position, then we just haven't
       // handled the collision yet, so keep them as valid.
-      const validCollisions = collisionsNotAtCurrentPosition.length > 0
-        ? collisionsNotAtCurrentPosition
-        : collisions;
+      const validCollisions =
+        collisionsNotAtCurrentPosition.length > 0
+          ? collisionsNotAtCurrentPosition
+          : collisions;
 
       // This shouldn't happen, but lets try not to crash
       if (validCollisions.length === 0) {
